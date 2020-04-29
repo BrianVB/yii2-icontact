@@ -38,13 +38,21 @@ if(!empty($accounts)): ?>
 <p>
 <?php
 $clientFolders = ApiHelper::getSingleton()->getInstance()->makeCall('/a/'.ApiHelper::getSingleton()->getInstance()->setAccountId().'/c/', 'get', null, 'clientfolders');
-
 if(!empty($clientFolders)): ?>
 	The following client folders were found:
 	<ul>
 	<?php foreach($clientFolders as $clientFolder):
 ?>
-	<li>ID: <?= $clientFolder->clientFolderId; ?>; Email Recipient: <?= $clientFolder->emailRecipient; ?></li>
+		<li>
+			ID: <?= $clientFolder->clientFolderId; ?>;
+			<?php /**
+			For some reason their sandbox API and production API return different
+			sets of data so I need to check if the property exists here and display
+			something
+			**/ ?>
+			<?php if(property_exists($clientFolder, 'emailRecipient')):  ?> Email Recipient: <?= $clientFolder->emailRecipient.';'; endif; ?>
+			<?php if(property_exists($clientFolder, 'name')):  ?> Name: <?= $clientFolder->name; endif; ?>
+		</li>
 <?php endforeach;?>
 	</ul>
 <?php else: ?>
