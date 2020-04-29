@@ -100,6 +100,10 @@ class ApiHelper extends BaseObject
             if(isset(Yii::$app->params['iContact']['useSandbox']) && Yii::$app->params['iContact']['useSandbox']){
                 $this->_instance->useSandbox();
             }
+
+            if(isset(Yii::$app->params['iContact']['clientFolderId'])){
+                $this->_instance->setClientFolderId(Yii::$app->params['iContact']['clientFolderId']);
+            }
         }
         return $this->_instance;
     }
