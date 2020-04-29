@@ -14,5 +14,63 @@ $this->title = 'iContact Api';
     </ul>
 </p>
 
+<hr />
+
+<?php
+$accounts = ApiHelper::getSingleton()->getInstance()->makeCall('/a/', 'get', null, 'accounts');
+if(!empty($accounts)): ?>
+	The following accounts were found:
+	<ul>
+	<?php foreach($accounts as $account):
+?>
+	<li>ID: <?= $account->accountId; ?>; Email: <?= $account->email; ?></li>
+<?php endforeach;?>
+	</ul>
+<?php else: ?>
+	The api returned no accounts
+<?php endif; ?>
+</p>
+
 <p>The account ID returned from the API call: <?= ApiHelper::getSingleton()->getInstance()->setAccountId(); ?></p>
-<p>The client folder ID returned from the API call: <?= ApiHelper::getSingleton()->getInstance()->setClientFolderId(); ?></p>
+
+<hr />
+
+<p>
+<?php
+$clientFolders = ApiHelper::getSingleton()->getInstance()->makeCall('/a/'.ApiHelper::getSingleton()->getInstance()->setAccountId().'/c/', 'get', null, 'clientfolders');
+
+if(!empty($clientFolders)): ?>
+	The following client folders were found:
+	<ul>
+	<?php foreach($clientFolders as $clientFolder):
+?>
+	<li>ID: <?= $clientFolder->clientFolderId; ?>; Email Recipient: <?= $clientFolder->emailRecipient; ?></li>
+<?php endforeach;?>
+	</ul>
+<?php else: ?>
+	The api returned no client folders
+<?php endif; ?>
+</p>
+
+<p>The default client folder ID returned from the API call: <?= ApiHelper::getSingleton()->getInstance()->setClientFolderId(); ?></p>
+
+<hr />
+
+<p>
+<?php
+$lists = ApiHelper::getSingleton()->getInstance()->getLists();
+if(!empty($lists)): ?>
+	The following lists were found:
+	<ul>
+	<?php foreach($lists as $list):
+?>
+	<li>
+		<?= $list->name; ?> ID: <?= $list->listId; ?><br />
+		<?= $list->description; ?>
+	</li>
+<?php endforeach;?>
+	</ul>
+<?php else: ?>
+	The api returned no lists
+<?php endif; ?>
+</p>
