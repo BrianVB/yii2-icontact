@@ -32,6 +32,7 @@ if(!empty($accounts)): ?>
 </p>
 
 <p>The account ID returned from the API call: <?= ApiHelper::getSingleton()->getInstance()->setAccountId(); ?></p>
+<p>The default client folder ID returned from the API call: <?= ApiHelper::getSingleton()->getInstance()->setClientFolderId(); ?></p>
 
 <hr />
 
@@ -52,6 +53,24 @@ if(!empty($clientFolders)): ?>
 			**/ ?>
 			<?php if(property_exists($clientFolder, 'emailRecipient')):  ?> Email Recipient: <?= $clientFolder->emailRecipient.';'; endif; ?>
 			<?php if(property_exists($clientFolder, 'name')):  ?> Name: <?= $clientFolder->name; endif; ?>
+
+			<?php
+			ApiHelper::getSingleton()->getInstance()->setClientFolderId($clientFolder->clientFolderId);
+			$lists = ApiHelper::getSingleton()->getInstance()->getLists();
+			if(!empty($lists)): ?>
+				<br />The following lists were found:
+				<ul>
+				<?php foreach($lists as $list):
+			?>
+				<li>
+					<?= $list->name; ?> (ID: <?= $list->listId; ?>)<br />
+					<?= $list->description; ?>
+				</li>
+			<?php endforeach;?>
+				</ul>
+			<?php else: ?>
+				The api returned no lists
+			<?php endif; ?>
 		</li>
 <?php endforeach;?>
 	</ul>
@@ -60,25 +79,4 @@ if(!empty($clientFolders)): ?>
 <?php endif; ?>
 </p>
 
-<p>The default client folder ID returned from the API call: <?= ApiHelper::getSingleton()->getInstance()->setClientFolderId(); ?></p>
 
-<hr />
-
-<p>
-<?php
-$lists = ApiHelper::getSingleton()->getInstance()->getLists();
-if(!empty($lists)): ?>
-	The following lists were found:
-	<ul>
-	<?php foreach($lists as $list):
-?>
-	<li>
-		<?= $list->name; ?> ID: <?= $list->listId; ?><br />
-		<?= $list->description; ?>
-	</li>
-<?php endforeach;?>
-	</ul>
-<?php else: ?>
-	The api returned no lists
-<?php endif; ?>
-</p>
