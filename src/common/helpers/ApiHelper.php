@@ -83,9 +83,11 @@ class ApiHelper extends BaseObject
      * ['iContact']['appId']
      * ['iContact']['apiPassword']
      * ['iContact']['apiUsername']
-     * And optionally one can set a boolean true value on the following to connect
+     * Optionally one can set a boolean true value on the following to connect
      * to the sandbox:
      * ['iContact']['useSandbox']
+     * Optionally set a default client folder to be set upon loading by setting
+     * ['iContact']['clientFolderId']
      * @return iContact\iContactApi
      */
     public function getInstance()
