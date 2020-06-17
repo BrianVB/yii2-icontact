@@ -3,6 +3,7 @@
 namespace bvb\icontact\common\models;
 
 use bvb\icontact\common\helpers\ApiHelper;
+use Exception;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -80,8 +81,14 @@ class Contact extends \yii\db\ActiveRecord
                 if(isset($map[$argumentName])){
                     $args[$argumentName] = ArrayHelper::getValue($this, $map[$argumentName]);
                 }
-            }           
-            $contact = call_user_func_array([ApiHelper::getSingleton()->getInstance(), 'updateContact'], $args);
+            }
+            try{
+                $contact = call_user_func_array([ApiHelper::getSingleton()->getInstance(), 'updateContact'], $args);
+            } catch(Exception $e){
+                foreach(ApiHelper::getSingleton()->getInstance()->getErrors() as $error){
+                    $this->addError('contact_id', $error);
+                }
+            }
         }
         return parent::beforeValidate();
     }
