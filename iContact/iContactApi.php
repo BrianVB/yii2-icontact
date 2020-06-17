@@ -2,6 +2,8 @@
 
 namespace iContact;
 
+use Exception;
+
 /**
  * @name iContactApi
  * @package iContact
