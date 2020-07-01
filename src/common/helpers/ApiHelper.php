@@ -33,51 +33,6 @@ class ApiHelper extends BaseObject
     private $_instance;
 
     /**
-     * Array of arguments that can be passed to [[iContact\iContactApi::addContact]]
-     * in order to be used by external applications to call the function properly
-     * @var array
-     */
-    static $addContactArguments = [
-        'sEmail' => null,
-        'sStatus' => 'normal',
-        'sPrefix' => null,
-        'sFirstName' => null,
-        'sLastName' => null,
-        'sSuffix' => null,
-        'sStreet' => null,
-        'sStreet2' => null,
-        'sCity' => null,
-        'sState' => null,
-        'sPostalCode' => null,
-        'sPhone' => null,
-        'sFax' => null,
-        'sBusiness' => null,
-    ];
-
-    /**
-     * Array of arguments that can be passed to [[iContact\iContactApi::updateContact]]
-     * in order to be used by external applications to call the function properly
-     * @var array
-     */
-    static $updateContactArguments = [
-        'iContactId' => null,
-        'sEmail' => null,
-        'sPrefix' => null,
-        'sFirstName' => null,
-        'sLastName' => null,
-        'sSuffix' => null,
-        'sStreet' => null,
-        'sStreet2' => null,
-        'sCity' => null,
-        'sState' => null,
-        'sPostalCode' => null,
-        'sPhone' => null,
-        'sFax' => null,
-        'sBusiness' => null,
-        'sStatus' => null,
-    ];
-
-    /**
      * Return an instance of the iContact API class that has had the credentials
      * applied. Uses Yii2 the following application parameters:
      * ['iContact']['appId']

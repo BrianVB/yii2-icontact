@@ -5,6 +5,7 @@ namespace bvb\icontact\common\models;
 use bvb\icontact\common\helpers\ApiHelper;
 use Exception;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -21,6 +22,21 @@ use yii\helpers\ArrayHelper;
 class Contact extends \yii\db\ActiveRecord
 {
     /**
+     * List of additional params that may apply to a contact in iContact like
+     * name or custom fields like if a user is an active subscriber. These will
+     * be used in calls to the API when creating or updating a contact
+     * @var array
+     */
+    public $params = [];
+
+    /**
+     * Name of the class for the related user model
+     * @see [[getUserClass()]]
+     * @var string
+     */
+    private $_userClass;
+
+    /**
      * @inheritdoc
      */
     public static function tableName()
@@ -36,7 +52,7 @@ class Contact extends \yii\db\ActiveRecord
             [['contact_id'], 'required'],
             [['contact_id'], 'integer'],
             [['last_sync_time'], 'safe'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['user_id' => Yii::$app->user->identityClass::instance()->primaryKey()[0]]]
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => $this->getUserClass(), 'targetAttribute' => ['user_id' => $this->getUserClass()::instance()->primaryKey()[0]]]
         ];
     }
 
@@ -45,7 +61,7 @@ class Contact extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'user_id']);
+        return $this->hasOne($this->getUserClass(), ['id' => 'user_id']);
     }
 
     /**
@@ -54,42 +70,72 @@ class Contact extends \yii\db\ActiveRecord
      */
     public function beforeValidate()
     {
-        // --- This is done in a funny way because of how many arguments they have
-        // --- in their API function. We will allow for a custom mapping of properties
-        // --- via our application param and we will have to call the function
-        // --- via call_user_func_array to pass them in properly
+        // --- We will allow for a custom mapping of properties via an application
+        // --- param and in and the [[$params]] variable on this will override those
+        // --- values to determine what to send to the API
         $map = [
-            'sEmail' => 'user.email'
+            'email' => 'user.email'
         ];
         if(isset(Yii::$app->params['iContact']['contactPropertyMap'])){
             $map = ArrayHelper::merge($map, Yii::$app->params['iContact']['contactPropertyMap']);
         }
+        foreach($map as $iContactPropertyName => $modelPropertyName){
+            if(!isset($this->params[$iContactPropertyName])){
+                $this->params[$iContactPropertyName] = ArrayHelper::getValue($this, $modelPropertyName);
+            }
+        }
 
         if($this->isNewRecord){
-            $args = ApiHelper::$addContactArguments;
-            foreach($args as $argumentName => $argumentValue){
-                if(isset($map[$argumentName])){
-                    $args[$argumentName] = ArrayHelper::getValue($this, $map[$argumentName]);
-                }
-            }
-            $contact = call_user_func_array([ApiHelper::getSingleton()->getInstance(), 'addContact'], $args);
-            $this->contact_id = $contact->contactId;
-        } else {
-            $args = ApiHelper::$updateContactArguments;
-            $args['iContactId'] = $this->contact_id;
-            foreach($args as $argumentName => $argumentValue){
-                if(isset($map[$argumentName])){
-                    $args[$argumentName] = ArrayHelper::getValue($this, $map[$argumentName]);
-                }
-            }
             try{
-                $contact = call_user_func_array([ApiHelper::getSingleton()->getInstance(), 'updateContact'], $args);
+                $contacts = ApiHelper::getSingleton()->getInstance()->makeCall(
+                    '/a/'.ApiHelper::getSingleton()->getInstance()->setAccountId().'/c/'.ApiHelper::getSingleton()->getInstance()->setClientFolderId().'/contacts/',
+                    'POST',
+                    [$this->params],
+                    'contacts'
+                );
+                $this->contact_id = $contacts[0]->contactId;
             } catch(Exception $e){
+                foreach(ApiHelper::getSingleton()->getInstance()->getErrors() as $error){
+                    $this->addError('contact_id', $error);
+                }                
+            }
+        } else {
+            try{
+                $contact = ApiHelper::getSingleton()->getInstance()->makeCall(
+                    '/a/'.ApiHelper::getSingleton()->getInstance()->setAccountId().'/c/'.ApiHelper::getSingleton()->getInstance()->setClientFolderId().'/contacts/'.$this->contact_id,
+                    'POST',
+                    $this->params,
+                    'contact'
+                );
+            } catch(Exception $e){
+                \Yii::warning($e->getMessage());
                 foreach(ApiHelper::getSingleton()->getInstance()->getErrors() as $error){
                     $this->addError('contact_id', $error);
                 }
             }
         }
         return parent::beforeValidate();
+    }
+
+    /**
+     * Gets the user class based on the user identity class of the app or the
+     * one set via an application paramter [iContact][userClass]
+     * @return string
+     */
+    private function getUserClass()
+    {
+        if(empty($this->_userClass)){
+            if(isset(Yii::$app->user->identifyClass)){
+                $this->_userClass = Yii::$app->user->identifyClass;
+            }
+            if(isset(Yii::$app->params['iContact']['userClass'])){
+                $this->_userClass = Yii::$app->params['iContact']['userClass'];
+            }
+            if(!$this->_userClass){
+                throw new InvalidConfigException('There is no user component identityClass set and no application parameter for [iContact][userClass] so the Contact model cannot determine the related user class');
+            }            
+        }
+        return $this->_userClass;
+
     }
 }
