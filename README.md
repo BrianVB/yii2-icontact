@@ -17,3 +17,12 @@ By default the `contact` table has a foreign key to the table `user` where with 
 `user_id` references `user`.`id`. This is a limitation that will need to be changed if
 we require a more flexible solution, or the user can implement their own migration
 to change this.
+
+There are also console commands for syncing data. They make use of the brianvb\yii2-reporting
+so make sure to check the README for that with the necessary configuration setup. This extension
+can enabled with the following configuration:
+```
+    'modules' => [
+    	'i-contact' => \bvb\icontact\console\iContactModule::class
+    ],
+```

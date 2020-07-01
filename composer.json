@@ -3,7 +3,8 @@
     "description": "Uses iContact PHP API to communicate with servers. Creates database tables for holding references to iContact data and has commands to keep it in sync.",
     "type": "yii2-extension",
     "require": {
-        "yiisoft/yii2": "^2.0"
+        "yiisoft/yii2": "^2.0",
+        "brianvb/yii2-reporting": "@dev"
     },
     "authors": [
         {
@@ -22,10 +23,6 @@
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
-        },
-        {
-            "type": "vcs",
-            "url" : "git@github.com:icontact/icontact-api-php.git"
         }
     ]
 }
