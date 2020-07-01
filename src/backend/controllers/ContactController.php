@@ -9,10 +9,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 /**
- * @todo This has yet to be completed and also poses some challenges because the
- * function for updating a contact does not allow for custom parameters so we 
- * must find a way to do that which maybe will require not using their functionality
- * at all 
+ * ContactController is for routes related to Contact models and their related
+ * database records and also their objects in the iContact API
  */
 class ContactController extends Controller
 {
