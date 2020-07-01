@@ -70,20 +70,7 @@ class Contact extends \yii\db\ActiveRecord
      */
     public function beforeValidate()
     {
-        // --- We will allow for a custom mapping of properties via an application
-        // --- param and in and the [[$params]] variable on this will override those
-        // --- values to determine what to send to the API
-        $map = [
-            'email' => 'user.email'
-        ];
-        if(isset(Yii::$app->params['iContact']['contactPropertyMap'])){
-            $map = ArrayHelper::merge($map, Yii::$app->params['iContact']['contactPropertyMap']);
-        }
-        foreach($map as $iContactPropertyName => $modelPropertyName){
-            if(!isset($this->params[$iContactPropertyName])){
-                $this->params[$iContactPropertyName] = ArrayHelper::getValue($this, $modelPropertyName);
-            }
-        }
+        $this->populateParams();
 
         if($this->isNewRecord){
             try{
@@ -136,6 +123,33 @@ class Contact extends \yii\db\ActiveRecord
             }            
         }
         return $this->_userClass;
+    }
 
+    /**
+     * Uses the application parameter ['iContact']['contactPropertyMap'] to
+     * populate any values in [[$params]] that haven't already been set.
+     * @return array The params on the model
+     */
+    public function populateParams()
+    {
+        // --- We will allow for a custom mapping of properties via an application
+        // --- param and in and the [[$params]] variable on this will override those
+        // --- values to determine what to send to the API
+        $map = [
+            'email' => 'user.email',
+        ];
+        if(!empty($this->contactId)){
+            $map['id'] = $this->contactId;
+        }
+        if(isset(Yii::$app->params['iContact']['contactPropertyMap'])){
+            $map = ArrayHelper::merge($map, Yii::$app->params['iContact']['contactPropertyMap']);
+        }
+        foreach($map as $iContactPropertyName => $modelPropertyName){
+            if(!isset($this->params[$iContactPropertyName])){
+                $this->params[$iContactPropertyName] = ArrayHelper::getValue($this, $modelPropertyName);
+            }
+        }
+
+        return $this->params;
     }
 }
