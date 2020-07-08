@@ -4,6 +4,11 @@ Creates local tables desired to match data in iContact's system and keep that da
 iContact in sync with local data such as active users, user subscriptions, updates
 to email addresses in user accounts, and more.
 
+This also requires as a prerequisite that the admin role created in brianvb/yii2-user
+to be added to the auth tables and the instructions for that can be found there. One
+may also manually add the admin role and not require the full set of migrations from
+brianvb/yii2-user if they would prefer.
+
 Creates a `contact` table intended to hold a the id of the user in the current system
 and relate it to the id of the contact in iContact's system
 
