@@ -112,8 +112,8 @@ class Contact extends \yii\db\ActiveRecord
     private function getUserClass()
     {
         if(empty($this->_userClass)){
-            if(isset(Yii::$app->user->identifyClass)){
-                $this->_userClass = Yii::$app->user->identifyClass;
+            if(isset(Yii::$app->user->identityClass)){
+                $this->_userClass = Yii::$app->user->identityClass;
             }
             if(isset(Yii::$app->params['iContact']['userClass'])){
                 $this->_userClass = Yii::$app->params['iContact']['userClass'];
