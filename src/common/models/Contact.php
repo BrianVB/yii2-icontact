@@ -49,8 +49,9 @@ class Contact extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['contact_id'], 'required'],
-            [['contact_id'], 'integer'],
+            [['id'], 'required'],
+            [['id', 'user_id'], 'unique'],
+            [['id', 'user_id'], 'integer'],
             [['last_sync_time'], 'safe'],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => $this->getUserClass(), 'targetAttribute' => ['user_id' => $this->getUserClass()::instance()->primaryKey()[0]]]
         ];
@@ -72,7 +73,7 @@ class Contact extends \yii\db\ActiveRecord
     {
         $this->populateParams();
 
-        if($this->isNewRecord){
+        if($this->isNewRecord && empty($this->id)){
             try{
                 $contacts = ApiHelper::getSingleton()->getInstance()->makeCall(
                     '/a/'.ApiHelper::getSingleton()->getInstance()->setAccountId().'/c/'.ApiHelper::getSingleton()->getInstance()->setClientFolderId().'/contacts/',
@@ -80,16 +81,16 @@ class Contact extends \yii\db\ActiveRecord
                     [$this->params],
                     'contacts'
                 );
-                $this->contact_id = $contacts[0]->contactId;
+                $this->id = $contacts[0]->contactId;
             } catch(Exception $e){
                 foreach(ApiHelper::getSingleton()->getInstance()->getErrors() as $error){
-                    $this->addError('contact_id', $error);
+                    $this->addError('id', $error);
                 }                
             }
-        } else {
+        } elseif(!$this->isNewRecord) {
             try{
                 $contact = ApiHelper::getSingleton()->getInstance()->makeCall(
-                    '/a/'.ApiHelper::getSingleton()->getInstance()->setAccountId().'/c/'.ApiHelper::getSingleton()->getInstance()->setClientFolderId().'/contacts/'.$this->contact_id,
+                    '/a/'.ApiHelper::getSingleton()->getInstance()->setAccountId().'/c/'.ApiHelper::getSingleton()->getInstance()->setClientFolderId().'/contacts/'.$this->id,
                     'POST',
                     $this->params,
                     'contact'
@@ -97,7 +98,7 @@ class Contact extends \yii\db\ActiveRecord
             } catch(Exception $e){
                 \Yii::warning($e->getMessage());
                 foreach(ApiHelper::getSingleton()->getInstance()->getErrors() as $error){
-                    $this->addError('contact_id', $error);
+                    $this->addError('id', $error);
                 }
             }
         }
