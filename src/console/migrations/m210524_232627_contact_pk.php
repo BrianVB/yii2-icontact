@@ -28,7 +28,7 @@ class m210524_232627_contact_pk extends Migration
         // --- Remove duplicates which would cause key constraint errors
         $sql = <<<SQL
 SELECT `id`, count(`user_id`) as `num_user_ids`, GROUP_CONCAT(`id`) as `ids_string`
-FROM `ds_live`.`icontact_contact` 
+FROM `icontact_contact` 
 GROUP BY `id` 
 HAVING COUNT(`user_id`) >1;
 SQL;
