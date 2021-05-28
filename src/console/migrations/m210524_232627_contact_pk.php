@@ -38,7 +38,7 @@ SQL;
             $this->delete('icontact_contact', ['id' => array_pop($duplicateIds)]);
         }
         
-        $this->addPrimaryKey('PRIMARY', 'icontact_contact', 'id');
+        $this->addPrimaryKey('PRIME', 'icontact_contact', 'id');
     }
 
     /**
@@ -61,6 +61,6 @@ SQL;
             'CASCADE'
         );
 
-        $this->addPrimaryKey('PRIMARY', 'icontact_contact', 'user_id');
+        $this->addPrimaryKey('PRIME', 'icontact_contact', 'user_id');
     }
 }
