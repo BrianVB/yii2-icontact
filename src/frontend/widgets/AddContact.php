@@ -63,6 +63,14 @@ class AddContact extends \yii\base\Widget
     public $hint;
 
     /**
+     * Options passed to render the email input
+     * @var array
+     */
+    public $inputOptions = [
+        'placeholder' => 'Enter Email Address'
+    ];
+
+    /**
      * Displays the form
      * {@inheritdoc}
      */ 
@@ -86,7 +94,7 @@ class AddContact extends \yii\base\Widget
                 $emailField->hint($this->hint);
             }
 
-            echo $emailField->input('email', ['placeholder' => 'Enter Email Address']); ?>
+            echo $emailField->input('email', $this->inputOptions); ?>
             <div id="<?= $form->getId(); ?>-success-message" class="success-message-container"></div>
 
 
