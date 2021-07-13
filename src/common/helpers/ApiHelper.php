@@ -2,7 +2,6 @@
 
 namespace bvb\icontact\common\helpers;
 
-use bvb\singleton\Singleton;
 use iContact\iContactApi;
 use Yii;
 use yii\base\BaseObject;
@@ -18,7 +17,7 @@ class ApiHelper extends BaseObject
     /**
      * Implement singleton trait to use one instance across app if desired
      */
-    use Singleton;
+    use \yiiutils\Singleton;
 
     /**
      * Array of configuration information passed through to 
